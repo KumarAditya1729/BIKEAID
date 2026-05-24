@@ -1,5 +1,5 @@
 import { AppShell, Button, Card, MetricCard, StatusBadge } from "@mechconnect/ui";
-import { Camera, CheckCircle2, MessageCircle, Navigation, XCircle } from "lucide-react";
+import { Camera, CheckCircle2, IndianRupee, MessageCircle, Navigation, Timer, XCircle, Zap } from "lucide-react";
 
 const jobs = [
   { id: "MC-1042", type: "Roadside", bike: "150cc", area: "HSR Layout", payout: "Rs.210", status: "Assigned" },
@@ -10,13 +10,21 @@ export default function MechanicHome() {
   return (
     <AppShell
       role="Mechanic Partner App"
-      title="Fast job handling for mechanics in the field"
-      subtitle="Accept work, switch availability, navigate through WhatsApp, upload before/after photos, verify OTP, and track earnings without operational clutter."
+      title="Your jobs, route, photos, and earnings"
+      subtitle="A field-first mechanic console with large actions, quick availability, WhatsApp navigation, before/after proof, OTP completion, and verified payouts."
     >
+      <div className="mb-4 grid gap-3 sm:grid-cols-3">
+        <MetricCard label="Next pickup" value="HSR Layout" detail="Roadside rescue, 2.4 km away" />
+        <MetricCard label="Cash/QR pending" value="Rs.1,180" detail="Admin verification queue" />
+        <MetricCard label="Emergency duty" value="On" detail="Priority roadside assignment" />
+      </div>
       <div className="grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
         <div className="grid gap-4">
           <Card>
-            <h2 className="mb-3 font-bold">Availability</h2>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="font-black">Availability</h2>
+              <StatusBadge tone="good">Online</StatusBadge>
+            </div>
             <div className="grid grid-cols-2 gap-2">
               {["Online", "Busy", "Offline", "Emergency duty"].map((status, index) => (
                 <Button key={status} variant={index === 0 ? "primary" : "secondary"}>
@@ -30,15 +38,18 @@ export default function MechanicHome() {
         </div>
         <Card>
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-bold">Assigned jobs</h2>
-            <StatusBadge tone="good">Online</StatusBadge>
+            <div>
+              <h2 className="font-black">Assigned jobs</h2>
+              <p className="text-sm text-zinc-500">Accept, navigate, capture proof, and close.</p>
+            </div>
+            <StatusBadge tone="warn">2 jobs</StatusBadge>
           </div>
           <div className="space-y-3">
             {jobs.map((job) => (
-              <div className="rounded-md border border-zinc-200 p-3" key={job.id}>
+              <div className="rounded-lg border border-orange-100 bg-orange-50/30 p-3" key={job.id}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold">{job.id} · {job.type}</p>
+                    <p className="font-black">{job.id} · {job.type}</p>
                     <p className="text-sm text-zinc-600">{job.bike} bike near {job.area}</p>
                   </div>
                   <StatusBadge tone={job.status === "Completed" ? "good" : "info"}>{job.status}</StatusBadge>
@@ -49,9 +60,19 @@ export default function MechanicHome() {
                   <Button variant="secondary" icon={<Navigation size={16} />}>Navigate</Button>
                   <Button variant="secondary" icon={<Camera size={16} />}>Photos</Button>
                 </div>
-                <div className="mt-3 flex items-center justify-between rounded-md bg-zinc-50 p-3 text-sm">
-                  <span>Mechanic earning</span>
-                  <strong>{job.payout}</strong>
+                <div className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+                  <div className="flex items-center gap-2 rounded-md bg-white p-3 font-semibold text-zinc-700">
+                    <IndianRupee size={16} className="text-orange-600" />
+                    {job.payout}
+                  </div>
+                  <div className="flex items-center gap-2 rounded-md bg-white p-3 font-semibold text-zinc-700">
+                    <Timer size={16} className="text-orange-600" />
+                    18 min ETA
+                  </div>
+                  <div className="flex items-center gap-2 rounded-md bg-white p-3 font-semibold text-zinc-700">
+                    <Zap size={16} className="text-orange-600" />
+                    OTP close
+                  </div>
                 </div>
               </div>
             ))}

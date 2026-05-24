@@ -42,7 +42,11 @@ export function CustomerAuthForm() {
   }
 
   return (
-    <Card className="mx-auto max-w-md">
+    <Card className="mx-auto max-w-md border-orange-200">
+      <div className="mb-4">
+        <h2 className="text-xl font-black">Access MechConnect</h2>
+        <p className="text-sm text-zinc-500">Use a verified account before booking service.</p>
+      </div>
       <div className="mb-4 flex gap-2">
         <Button type="button" variant={mode === "signin" ? "primary" : "secondary"} onClick={() => setMode("signin")} icon={<LogIn size={16} />}>Sign in</Button>
         <Button type="button" variant={mode === "signup" ? "primary" : "secondary"} onClick={() => setMode("signup")} icon={<UserPlus size={16} />}>Sign up</Button>
@@ -50,12 +54,12 @@ export function CustomerAuthForm() {
       <form className="space-y-3" onSubmit={submit}>
         {mode === "signup" ? (
           <>
-            <input className="min-h-11 w-full rounded-md border border-zinc-300 px-3" name="fullName" placeholder="Full name" required />
-            <input className="min-h-11 w-full rounded-md border border-zinc-300 px-3" name="phone" placeholder="10 digit mobile" required pattern="[6-9][0-9]{9}" />
+            <input className="min-h-12 w-full rounded-md border border-orange-100 bg-orange-50/40 px-3 font-semibold outline-none focus:border-orange-500" name="fullName" placeholder="Full name" required />
+            <input className="min-h-12 w-full rounded-md border border-orange-100 bg-orange-50/40 px-3 font-semibold outline-none focus:border-orange-500" name="phone" placeholder="10 digit mobile" required pattern="[6-9][0-9]{9}" />
           </>
         ) : null}
-        <input className="min-h-11 w-full rounded-md border border-zinc-300 px-3" name="email" placeholder="Email" required type="email" />
-        <input className="min-h-11 w-full rounded-md border border-zinc-300 px-3" name="password" placeholder="Password" required type="password" minLength={8} />
+        <input className="min-h-12 w-full rounded-md border border-orange-100 bg-orange-50/40 px-3 font-semibold outline-none focus:border-orange-500" name="email" placeholder="Email" required type="email" />
+        <input className="min-h-12 w-full rounded-md border border-orange-100 bg-orange-50/40 px-3 font-semibold outline-none focus:border-orange-500" name="password" placeholder="Password" required type="password" minLength={8} />
         <Button className="w-full" type="submit">{mode === "signup" ? "Create account" : "Sign in"}</Button>
       </form>
       {message ? <p className="mt-3 text-sm text-zinc-600">{message}</p> : null}
