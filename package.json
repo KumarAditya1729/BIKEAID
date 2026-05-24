@@ -6,9 +6,9 @@
   "description": "Production-minded MVP monorepo for MechConnect roadside assistance and bike service operations.",
   "scripts": {
     "dev": "turbo dev --parallel",
-    "dev:customer": "npm run dev -w @mechconnect/customer -- -p 3000",
+    "dev:customer": "npm run dev -w @mechconnect/customer -- -p 3010",
     "dev:mechanic": "npm run dev -w @mechconnect/mechanic -- -p 3001",
-    "dev:garage": "npm run dev -w @mechconnect/garage -- -p 3002",
+    "dev:garage": "npm run dev -w @mechconnect/garage -- -p 3012",
     "dev:admin": "npm run dev -w @mechconnect/admin -- -p 3003",
     "build": "turbo build",
     "lint": "turbo lint",

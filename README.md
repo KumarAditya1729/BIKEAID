@@ -21,6 +21,13 @@ npm run dev:garage
 npm run dev:admin
 ```
 
+Default local ports:
+
+- Customer: `http://localhost:3010`
+- Mechanic: `http://localhost:3001`
+- Garage: `http://localhost:3012`
+- Admin: `http://localhost:3003`
+
 ## Documentation
 
 - [Architecture](./docs/architecture.md)

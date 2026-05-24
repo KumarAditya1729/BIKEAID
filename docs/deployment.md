@@ -14,6 +14,8 @@ npm run dev:garage
 npm run dev:admin
 ```
 
+Default local ports are `3010` for customer, `3001` for mechanic, `3012` for garage, and `3003` for admin. The customer and garage apps avoid `3000` and `3002` because those ports are commonly occupied by Docker or other local services.
+
 Or start all apps with Docker:
 
 ```bash
