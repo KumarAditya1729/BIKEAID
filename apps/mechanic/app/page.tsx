@@ -1,4 +1,4 @@
-import { AppShell, Button, Card, MetricCard, StatusBadge } from "@mechconnect/ui";
+import { AppShell, Button, Card, DispatchSkeleton, MetricCard, StatusBadge } from "@mechconnect/ui";
 import { Camera, CheckCircle2, IndianRupee, MapPin, MessageCircle, Navigation, PhoneCall, Timer, XCircle, Zap } from "lucide-react";
 
 const jobs = [
@@ -47,21 +47,21 @@ export default function MechanicHome() {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="font-black">Assigned jobs</h2>
-              <p className="text-sm text-zinc-500">Accept, navigate, capture proof, and close.</p>
+              <p className="text-sm text-zinc-400">Accept, navigate, capture proof, and close.</p>
             </div>
             <StatusBadge tone="warn">2 jobs</StatusBadge>
           </div>
           <div className="space-y-3">
             {jobs.map((job) => (
-              <div className="rounded-lg border border-red-100 bg-red-50/40 p-3" key={job.id}>
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-3" key={job.id}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="font-black">{job.id} · {job.type}</p>
-                    <p className="text-sm text-zinc-600">{job.bike} bike near {job.area}</p>
+                    <p className="text-sm text-zinc-400">{job.bike} bike near {job.area}</p>
                   </div>
                   <StatusBadge tone={job.status === "Completed" ? "good" : "info"}>{job.status}</StatusBadge>
                 </div>
-                <div className="mt-3 flex items-center gap-2 rounded-md bg-white p-3 text-sm font-bold text-zinc-700">
+                <div className="mt-3 flex items-center gap-2 rounded-md bg-[#090b10] p-3 text-sm font-bold text-zinc-200">
                   <MapPin size={17} className="text-red-600" />
                   Customer shared live location via WhatsApp
                 </div>
@@ -72,21 +72,24 @@ export default function MechanicHome() {
                   <Button variant="secondary" icon={<Camera size={16} />}>Photos</Button>
                 </div>
                 <div className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
-                  <div className="flex items-center gap-2 rounded-md bg-white p-3 font-semibold text-zinc-700">
+                  <div className="flex items-center gap-2 rounded-md bg-[#090b10] p-3 font-semibold text-zinc-200">
                     <IndianRupee size={16} className="text-red-600" />
                     {job.payout}
                   </div>
-                  <div className="flex items-center gap-2 rounded-md bg-white p-3 font-semibold text-zinc-700">
+                  <div className="flex items-center gap-2 rounded-md bg-[#090b10] p-3 font-semibold text-zinc-200">
                     <Timer size={16} className="text-red-600" />
                     18 min ETA
                   </div>
-                  <div className="flex items-center gap-2 rounded-md bg-white p-3 font-semibold text-zinc-700">
+                  <div className="flex items-center gap-2 rounded-md bg-[#090b10] p-3 font-semibold text-zinc-200">
                     <Zap size={16} className="text-red-600" />
                     OTP close
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-4">
+            <DispatchSkeleton title="Uploading proof skeleton" />
           </div>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             <Button icon={<MessageCircle size={18} />}>Open WhatsApp</Button>

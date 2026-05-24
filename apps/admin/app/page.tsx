@@ -1,4 +1,4 @@
-import { AppShell, Button, Card, MetricCard, StatusBadge } from "@mechconnect/ui";
+import { AppShell, Button, Card, DispatchSkeleton, MetricCard, StatusBadge } from "@mechconnect/ui";
 import { AlertTriangle, CheckCheck, Eye, IndianRupee, ShieldAlert } from "lucide-react";
 
 const queues = [
@@ -30,17 +30,20 @@ export default function AdminHome() {
       <div className="mt-4 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
         <Card>
           <h2 className="mb-1 font-black">Operations queues</h2>
-          <p className="mb-4 text-sm text-zinc-500">Clear the highest-risk work first.</p>
+          <p className="mb-4 text-sm text-zinc-400">Clear the highest-risk work first.</p>
           <div className="grid gap-3">
             {queues.map((queue) => (
-              <div className="flex items-center justify-between rounded-lg border border-red-100 bg-red-50/40 p-3" key={queue.name}>
+              <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.04] p-3" key={queue.name}>
                 <div>
                   <span className="text-sm font-black">{queue.name}</span>
-                  <p className="mt-1 text-xs font-semibold text-zinc-500">Tap to review assigned evidence</p>
+                  <p className="mt-1 text-xs font-semibold text-zinc-400">Tap to review assigned evidence</p>
                 </div>
-                <span className="rounded-md bg-white px-3 py-2 text-lg font-black text-red-700 shadow-sm">{queue.count}</span>
+                <span className="rounded-md bg-red-500/15 px-3 py-2 text-lg font-black text-red-200 shadow-sm">{queue.count}</span>
               </div>
             ))}
+          </div>
+          <div className="mt-4">
+            <DispatchSkeleton title="Loading audit evidence" />
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2">
             <Button icon={<CheckCheck size={16} />}>Verify</Button>
@@ -51,18 +54,18 @@ export default function AdminHome() {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="font-black">Live request visibility</h2>
-              <p className="text-sm text-zinc-500">Scan assignments, payments, and disputes.</p>
+              <p className="text-sm text-zinc-400">Scan assignments, payments, and disputes.</p>
             </div>
             <Button variant="secondary" icon={<Eye size={16} />}>Open console</Button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[680px] text-left text-sm">
-              <thead className="border-b border-zinc-200 text-zinc-500">
+              <thead className="border-b border-white/10 text-zinc-400">
                 <tr><th className="py-2">Request</th><th>Customer</th><th>Garage</th><th>Status</th><th>Payment</th></tr>
               </thead>
               <tbody>
                 {requests.map((request) => (
-                  <tr className="border-b border-red-50" key={request.id}>
+                  <tr className="border-b border-white/10" key={request.id}>
                     <td className="py-3 font-mono text-xs">{request.id}</td>
                     <td>{request.customer}</td>
                     <td>{request.garage}</td>
@@ -78,11 +81,11 @@ export default function AdminHome() {
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <Card className="flex gap-3">
           <IndianRupee className="text-emerald-600" />
-          <p className="text-sm leading-6 text-zinc-600">No Razorpay in MVP: every cash or QR payment creates an immutable transaction row, then admin verification changes payment status.</p>
+          <p className="text-sm leading-6 text-zinc-300">No Razorpay in MVP: every cash or QR payment creates an immutable transaction row, then admin verification changes payment status.</p>
         </Card>
         <Card className="flex gap-3">
           <AlertTriangle className="text-amber-600" />
-          <p className="text-sm leading-6 text-zinc-600">Fraud logs capture suspicious repeated cancellations, OTP mismatches, disputed collections, and mechanic photo upload anomalies.</p>
+          <p className="text-sm leading-6 text-zinc-300">Fraud logs capture suspicious repeated cancellations, OTP mismatches, disputed collections, and mechanic photo upload anomalies.</p>
         </Card>
       </div>
     </AppShell>

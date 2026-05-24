@@ -42,7 +42,7 @@ export function CustomerAuthForm() {
   }
 
   return (
-    <Card className="mx-auto max-w-md overflow-hidden border-red-200 p-0">
+    <Card className="mx-auto max-w-md overflow-hidden p-0">
       <div className="bg-red-600 p-5 text-white">
         <p className="text-xs font-black uppercase tracking-wide text-red-100">Customer access</p>
         <h2 className="mt-2 text-2xl font-black">Ready for bike help?</h2>
@@ -55,14 +55,14 @@ export function CustomerAuthForm() {
       <form className="space-y-3 p-4" onSubmit={submit}>
         {mode === "signup" ? (
           <>
-            <input className="min-h-12 w-full rounded-md border border-red-100 bg-red-50/40 px-3 font-semibold outline-none focus:border-red-500" name="fullName" placeholder="Full name" required />
-            <input className="min-h-12 w-full rounded-md border border-red-100 bg-red-50/40 px-3 font-semibold outline-none focus:border-red-500" name="phone" placeholder="10 digit mobile" required pattern="[6-9][0-9]{9}" />
+            <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="fullName" placeholder="Full name" required />
+            <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="phone" placeholder="10 digit mobile" required pattern="[6-9][0-9]{9}" />
           </>
         ) : null}
-        <input className="min-h-12 w-full rounded-md border border-red-100 bg-red-50/40 px-3 font-semibold outline-none focus:border-red-500" name="email" placeholder="Email" required type="email" />
-        <input className="min-h-12 w-full rounded-md border border-red-100 bg-red-50/40 px-3 font-semibold outline-none focus:border-red-500" name="password" placeholder="Password" required type="password" minLength={8} />
+        <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="email" placeholder="Email" required type="email" />
+        <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="password" placeholder="Password" required type="password" minLength={8} />
         <Button className="w-full" type="submit">{mode === "signup" ? "Create account" : "Sign in"}</Button>
-        {message ? <p className="text-sm font-semibold text-zinc-600">{message}</p> : null}
+        {message ? <p className="text-sm font-semibold text-zinc-300">{message}</p> : null}
       </form>
     </Card>
   );

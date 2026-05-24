@@ -17,17 +17,17 @@ export function SignInForm() {
   }
 
   return (
-    <Card className="mx-auto max-w-md overflow-hidden border-red-200 p-0">
+    <Card className="mx-auto max-w-md overflow-hidden p-0">
       <div className="bg-zinc-950 p-5 text-white">
         <p className="text-xs font-black uppercase tracking-wide text-red-100">Super admin</p>
         <h2 className="mt-2 text-2xl font-black">Admin access</h2>
         <p className="mt-2 text-sm leading-6 text-zinc-300">Review dispatch, payments, disputes, and approvals.</p>
       </div>
       <form className="space-y-3 p-4" onSubmit={submit}>
-        <input className="min-h-12 w-full rounded-md border border-red-100 bg-red-50/40 px-3 font-semibold outline-none focus:border-red-500" name="email" placeholder="Email" required type="email" />
-        <input className="min-h-12 w-full rounded-md border border-red-100 bg-red-50/40 px-3 font-semibold outline-none focus:border-red-500" name="password" placeholder="Password" required type="password" />
+        <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="email" placeholder="Email" required type="email" />
+        <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="password" placeholder="Password" required type="password" />
         <Button className="w-full" type="submit">Sign in</Button>
-        {message ? <p className="text-sm font-semibold text-zinc-600">{message}</p> : null}
+        {message ? <p className="text-sm font-semibold text-zinc-300">{message}</p> : null}
       </form>
     </Card>
   );
