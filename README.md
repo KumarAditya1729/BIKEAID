@@ -36,6 +36,7 @@ Default local ports:
 - [Authentication Flow](./docs/auth-flow.md)
 - [Deployment](./docs/deployment.md)
 - [Production Readiness](./docs/production-readiness.md)
+- [Database Audit](./docs/database-audit.md)
 
 ## MVP Positioning
 
