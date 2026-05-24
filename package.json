@@ -1,0 +1,44 @@
+{
+  "name": "mechconnect",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "npm@11.6.2",
+  "description": "Production-minded MVP monorepo for MechConnect roadside assistance and bike service operations.",
+  "scripts": {
+    "dev": "turbo dev --parallel",
+    "dev:customer": "npm run dev -w @mechconnect/customer -- -p 3000",
+    "dev:mechanic": "npm run dev -w @mechconnect/mechanic -- -p 3001",
+    "dev:garage": "npm run dev -w @mechconnect/garage -- -p 3002",
+    "dev:admin": "npm run dev -w @mechconnect/admin -- -p 3003",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "overrides": {
+    "next": {
+      "postcss": "8.5.15"
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^16.2.6",
+    "globals": "^16.5.0",
+    "postcss": "^8.5.15",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.59.4"
+  },
+  "engines": {
+    "node": ">=20.11.0",
+    "npm": ">=10.0.0"
+  }
+}

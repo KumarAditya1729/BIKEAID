@@ -1,0 +1,41 @@
+services:
+  customer:
+    image: node:22-alpine
+    working_dir: /workspace
+    command: sh -c "npm install && npm run dev -w @mechconnect/customer -- -H 0.0.0.0 -p 3000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/workspace
+    env_file:
+      - .env
+  mechanic:
+    image: node:22-alpine
+    working_dir: /workspace
+    command: sh -c "npm install && npm run dev -w @mechconnect/mechanic -- -H 0.0.0.0 -p 3001"
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/workspace
+    env_file:
+      - .env
+  garage:
+    image: node:22-alpine
+    working_dir: /workspace
+    command: sh -c "npm install && npm run dev -w @mechconnect/garage -- -H 0.0.0.0 -p 3002"
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/workspace
+    env_file:
+      - .env
+  admin:
+    image: node:22-alpine
+    working_dir: /workspace
+    command: sh -c "npm install && npm run dev -w @mechconnect/admin -- -H 0.0.0.0 -p 3003"
+    ports:
+      - "3003:3003"
+    volumes:
+      - .:/workspace
+    env_file:
+      - .env

@@ -1,0 +1,43 @@
+import { z } from "zod";
+import { bikeCategories, distanceSlabs, mechanicStatuses, paymentMethods, roles, serviceTypes } from "./types";
+
+export const uuidSchema = z.string().uuid();
+export const roleSchema = z.enum(roles);
+export const phoneSchema = z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10 digit Indian mobile number");
+
+export const profileSchema = z.object({
+  fullName: z.string().trim().min(2).max(80),
+  phone: phoneSchema,
+  role: roleSchema
+});
+
+export const serviceRequestSchema = z.object({
+  serviceType: z.enum(serviceTypes),
+  bikeCategory: z.enum(bikeCategories),
+  distanceSlab: z.enum(distanceSlabs),
+  pickupAddress: z.string().trim().min(10).max(500),
+  issueDescription: z.string().trim().min(5).max(1000),
+  whatsappNumber: phoneSchema
+});
+
+export const mechanicAvailabilitySchema = z.object({
+  status: z.enum(mechanicStatuses)
+});
+
+export const completionOtpSchema = z.object({
+  requestId: uuidSchema,
+  otp: z.string().regex(/^\d{6}$/, "OTP must be 6 digits")
+});
+
+export const paymentCollectionSchema = z.object({
+  requestId: uuidSchema,
+  method: z.enum(paymentMethods),
+  amount: z.coerce.number().positive().max(100000),
+  referenceNote: z.string().trim().max(140).optional()
+});
+
+export const ratingSchema = z.object({
+  requestId: uuidSchema,
+  rating: z.coerce.number().int().min(1).max(5),
+  review: z.string().trim().max(1000).optional()
+});
