@@ -21,7 +21,12 @@ export async function POST(request: Request) {
       .select("id, role, full_name, email")
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === "PGRST116") {
+        return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+      }
+      throw error;
+    }
 
     if (input.role === "mechanic") {
       await supabase.from("mechanics").upsert({
