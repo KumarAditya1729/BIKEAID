@@ -35,6 +35,7 @@ Default local ports:
 - [API Architecture](./docs/api.md)
 - [Authentication Flow](./docs/auth-flow.md)
 - [Deployment](./docs/deployment.md)
+- [Production Readiness](./docs/production-readiness.md)
 
 ## MVP Positioning
 

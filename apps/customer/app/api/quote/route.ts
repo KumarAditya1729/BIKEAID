@@ -1,7 +1,14 @@
 import { quoteService, serviceRequestSchema } from "@mechconnect/core";
+import { checkRateLimit, getClientIp } from "@mechconnect/supabase/rate-limit";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const rate = checkRateLimit(`quote:${ip}`, 60, 60);
+  if (!rate.allowed) {
+    return NextResponse.json({ error: "Too many quote attempts" }, { status: 429, headers: { "retry-after": String(rate.retryAfterSeconds) } });
+  }
+
   const payload = await request.json();
   const parsed = serviceRequestSchema.pick({
     serviceType: true,

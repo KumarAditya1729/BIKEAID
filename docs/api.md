@@ -12,6 +12,8 @@ Use Next.js route handlers or server actions for mutations. Every mutation follo
 6. Let RLS provide the final data-access boundary.
 7. Write or rely on database audit logs for sensitive state changes.
 
+Clients must send `Authorization: Bearer <supabase-access-token>` for protected API routes. The server loads the user from Supabase Auth and then fetches the profile by service-role client before enforcing role permissions.
+
 Why: this gives the MVP a real backend security boundary without operating a separate API service.
 
 Security implication: never accept `role`, `customer_id`, `mechanic_id`, `garage_id`, prices, or payment status from the client as trusted facts.
@@ -22,6 +24,7 @@ Customer:
 
 - `POST /api/quote`: validates service request inputs and returns a trusted quote.
 - `POST /api/requests`: creates request after auth, server-calculated pricing, and RLS insert.
+- `GET /api/requests`: lists own request history.
 - `POST /api/ratings`: customer rates a completed request.
 
 Mechanic:
@@ -30,7 +33,8 @@ Mechanic:
 - `POST /api/jobs/reject`: assigned mechanic rejects job with reason.
 - `POST /api/jobs/complete`: verifies OTP and marks completion pending payment.
 - `POST /api/payments/collect`: records cash/QR collection as pending.
-- `POST /api/photos`: uploads before/after photo metadata after storage upload validation.
+- `PATCH /api/availability`: updates online, busy, offline, or emergency-duty status.
+- `POST /api/photos/sign`: validates photo metadata and returns a signed upload URL.
 
 Garage:
 
@@ -41,9 +45,10 @@ Garage:
 Admin:
 
 - `PATCH /api/requests/:id/assign`: assign garage/mechanic.
+- `POST /api/requests/assign`: assign garage/mechanic.
 - `POST /api/payments/verify`: verify pending payment.
-- `POST /api/payments/dispute`: mark payment disputed.
-- `PATCH /api/mechanics/:id/verify`: approve mechanic.
+- `PATCH /api/mechanics/verify`: approve mechanic and payout rules.
+- `POST /api/roles/promote`: promote customer profiles to mechanic, garage owner, or admin.
 - `GET /api/audit`: audit log search.
 - `GET /api/fraud`: fraud log search.
 

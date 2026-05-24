@@ -36,6 +36,8 @@ Required Supabase settings:
 - Keep `service-photos` bucket private.
 - Review RLS policies after every schema change.
 - Create first `super_admin` profile manually from the Supabase SQL editor.
+- Set `OTP_PEPPER` in every server runtime before accepting real OTP completions.
+- Run `supabase/rls-smoke-tests.sql` after creating test users for each role.
 
 ## Vercel
 
@@ -108,3 +110,14 @@ Weekly:
 - Review mechanic ratings and completion time.
 - Inspect fraud logs.
 - Rotate access for inactive admins.
+
+## Health Checks
+
+Each app exposes:
+
+- Customer: `/api/health`
+- Mechanic: `/api/health`
+- Garage: `/api/health`
+- Admin: `/api/health`
+
+Use these for Vercel uptime checks and deployment smoke tests.

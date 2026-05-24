@@ -83,4 +83,4 @@ Production secrets:
 
 ## Known Dependency Advisory
 
-As of this scaffold, `npm audit --omit=dev` reports a moderate advisory for Next.js stable pulling `postcss@8.4.31` below the patched `8.5.10` line. The latest stable Next release checked during setup was `16.2.6`; npm reports the patched Next range is not yet on the stable line. Do not use `npm audit fix --force`, because it proposes a breaking downgrade. Track the next stable Next release and upgrade as soon as the patched dependency lands.
+As of May 24, 2026, `npm audit --omit=dev` reports a moderate advisory for Next.js stable pulling `postcss@8.4.31` below the patched `8.5.10` line. The latest stable Next release checked during setup is `16.2.6`, and it still depends on `postcss@8.4.31`. The current `next@canary` line has `postcss@8.5.10`, but this project intentionally stays on stable Next for production predictability. Do not use `npm audit fix --force`, because it proposes a breaking downgrade. Upgrade to the next stable Next release as soon as the patched dependency lands.
