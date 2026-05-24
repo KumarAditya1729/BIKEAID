@@ -1,13 +1,78 @@
+import { readDashboardData, serviceClient } from "@mechconnect/supabase";
 import { AppShell, Button, Card, DispatchSkeleton, MetricCard, StatusBadge } from "@mechconnect/ui";
 import { BarChart3, Bike, MapPinned, Star, UserPlus } from "lucide-react";
 
-const mechanics = [
-  { name: "Ravi Kumar", status: "Online", jobs: 7, rating: "4.9" },
-  { name: "Imran Shaikh", status: "Busy", jobs: 5, rating: "4.7" },
-  { name: "Suresh P", status: "Offline", jobs: 3, rating: "4.5" }
-];
+export const dynamic = "force-dynamic";
 
-export default function GarageHome() {
+type GarageMechanic = { id: string; name: string; status: string; jobs: number; rating: string };
+type GarageDashboard = {
+  mechanics: GarageMechanic[];
+  metrics: { revenue: number; activeJobs: number; utilization: number; roadsideJobs: number; serviceZones: number };
+};
+
+const emptyDashboard: GarageDashboard = {
+  mechanics: [],
+  metrics: { revenue: 0, activeJobs: 0, utilization: 0, roadsideJobs: 0, serviceZones: 0 }
+};
+
+function rupees(value: number) {
+  return `Rs.${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value)}`;
+}
+
+function titleCase(value: string | null | undefined) {
+  return (value ?? "unknown").split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+async function loadGarageDashboard() {
+  return readDashboardData(emptyDashboard, async () => {
+    const supabase = serviceClient();
+    const [mechanicsResult, requestsResult, paymentsResult, ratingsResult, garagesResult] = await Promise.all([
+      supabase.from("mechanics").select("id, status, garage_id, profiles:profile_id(full_name)").order("updated_at", { ascending: false }),
+      supabase.from("service_requests").select("id, status, service_type, garage_id, assigned_mechanic_id"),
+      supabase.from("payments").select("amount, status"),
+      supabase.from("ratings").select("mechanic_id, rating"),
+      supabase.from("garages").select("city")
+    ]);
+
+    for (const result of [mechanicsResult, requestsResult, paymentsResult, ratingsResult, garagesResult]) {
+      if (result.error) throw result.error;
+    }
+
+    const requestRows = (requestsResult.data ?? []) as Array<{ status: string; service_type: string; garage_id: string | null; assigned_mechanic_id: string | null }>;
+    const ratingRows = (ratingsResult.data ?? []) as Array<{ mechanic_id: string | null; rating: number }>;
+    const mechanicRows = (mechanicsResult.data ?? []) as Array<{ id: string; status: string; profiles?: { full_name?: string } | null }>;
+
+    const mechanics = mechanicRows.map((mechanic) => {
+      const ratings = ratingRows.filter((rating) => rating.mechanic_id === mechanic.id);
+      return {
+        id: mechanic.id,
+        name: mechanic.profiles?.full_name ?? "Unnamed mechanic",
+        status: titleCase(mechanic.status),
+        jobs: requestRows.filter((request) => request.assigned_mechanic_id === mechanic.id).length,
+        rating: ratings.length > 0 ? (ratings.reduce((sum, row) => sum + row.rating, 0) / ratings.length).toFixed(1) : "-"
+      };
+    });
+
+    const activeStatuses = ["submitted", "assigned", "accepted", "in_progress", "completed_pending_payment", "payment_pending_verification"];
+    const activeMechanics = mechanicRows.filter((mechanic) => ["online", "busy", "emergency_duty"].includes(mechanic.status)).length;
+    const cities = new Set(((garagesResult.data ?? []) as Array<{ city: string | null }>).map((garage) => garage.city).filter(Boolean));
+
+    return {
+      mechanics,
+      metrics: {
+        revenue: ((paymentsResult.data ?? []) as Array<{ amount: number; status: string }>).filter((payment) => payment.status === "verified").reduce((sum, payment) => sum + payment.amount, 0),
+        activeJobs: requestRows.filter((request) => activeStatuses.includes(request.status)).length,
+        utilization: mechanicRows.length > 0 ? Math.round((activeMechanics / mechanicRows.length) * 100) : 0,
+        roadsideJobs: requestRows.filter((request) => request.service_type === "roadside_assistance").length,
+        serviceZones: cities.size
+      }
+    };
+  });
+}
+
+export default async function GarageHome() {
+  const { data: dashboard, error } = await loadGarageDashboard();
+
   return (
     <AppShell
       role="Garage Owner App"
@@ -15,10 +80,11 @@ export default function GarageHome() {
       subtitle="Track mechanics, live jobs, verified revenue, payouts, and performance with a compact dashboard built for busy garage owners."
     >
       <div className="grid gap-4 sm:grid-cols-3">
-        <MetricCard label="Garage revenue" value="Rs.18,420" detail="This week, verified payments only" />
-        <MetricCard label="Active jobs" value="6" detail="4 roadside, 2 home service" />
-        <MetricCard label="Mechanic utilization" value="78%" detail="Online plus busy mechanic time" />
+        <MetricCard label="Garage revenue" value={rupees(dashboard.metrics.revenue)} detail="Verified payments only" />
+        <MetricCard label="Active jobs" value={String(dashboard.metrics.activeJobs)} detail="Submitted through payment verification" />
+        <MetricCard label="Mechanic utilization" value={`${dashboard.metrics.utilization}%`} detail="Online plus busy mechanic time" />
       </div>
+      {error ? <Card className="mt-4 border-amber-400/20 bg-amber-400/10 text-sm text-amber-100">Connect Supabase env vars to load live garage rows. Current dashboard is showing empty states.</Card> : null}
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <Card>
           <div className="mb-4 flex items-center justify-between">
@@ -29,8 +95,8 @@ export default function GarageHome() {
             <Button icon={<UserPlus size={16} />}>Add mechanic</Button>
           </div>
           <div className="grid gap-3">
-            {mechanics.map((mechanic) => (
-              <div className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 sm:grid-cols-[1fr_auto]" key={mechanic.name}>
+            {dashboard.mechanics.length > 0 ? dashboard.mechanics.map((mechanic) => (
+              <div className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 sm:grid-cols-[1fr_auto]" key={mechanic.id}>
                 <div className="flex items-center gap-3">
                   <div className="flex size-11 items-center justify-center rounded-md bg-red-500/15 text-sm font-black text-red-200 shadow-sm">{mechanic.name.split(" ").map((part) => part[0]).join("")}</div>
                   <div>
@@ -52,7 +118,7 @@ export default function GarageHome() {
                   </div>
                 </div>
               </div>
-            ))}
+            )) : <div className="rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-semibold text-zinc-400">No mechanics found in Supabase yet.</div>}
           </div>
         </Card>
         <Card className="space-y-4">
@@ -67,11 +133,11 @@ export default function GarageHome() {
           <div className="grid gap-2 text-sm">
             <div className="flex items-center justify-between rounded-md bg-white/10 p-3 font-bold">
               <span className="flex items-center gap-2"><Bike size={16} /> Roadside jobs</span>
-              <span>42</span>
+              <span>{dashboard.metrics.roadsideJobs}</span>
             </div>
             <div className="flex items-center justify-between rounded-md bg-white/10 p-3 font-bold">
               <span className="flex items-center gap-2"><MapPinned size={16} /> Service zones</span>
-              <span>6</span>
+              <span>{dashboard.metrics.serviceZones}</span>
             </div>
           </div>
         </Card>

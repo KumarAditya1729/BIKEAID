@@ -1,10 +1,74 @@
 import { quoteService } from "@mechconnect/core";
+import { readDashboardData, serviceClient } from "@mechconnect/supabase";
 import { AppShell, Button, Card, DispatchSkeleton, StatusBadge } from "@mechconnect/ui";
 import { BatteryWarning, CheckCircle2, Clock3, Fuel, MapPin, MessageCircle, ShieldCheck, Sparkles, Wrench } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const quote = quoteService("roadside_assistance", "150cc", "within_5km");
 
-export default function CustomerHome() {
+type CustomerDashboard = {
+  stats: { liveRequests: number; garages: number; completedJobs: number };
+  latestRequest: {
+    status: string;
+    pickup: string;
+    mechanic: string;
+    eta: string;
+  } | null;
+};
+
+const emptyDashboard: CustomerDashboard = {
+  stats: { liveRequests: 0, garages: 0, completedJobs: 0 },
+  latestRequest: null
+};
+
+function titleCase(value: string | null | undefined) {
+  return (value ?? "unknown").split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+async function loadCustomerDashboard() {
+  return readDashboardData(emptyDashboard, async () => {
+    const supabase = serviceClient();
+    const [requestsResult, garagesResult, latestResult] = await Promise.all([
+      supabase.from("service_requests").select("id, status"),
+      supabase.from("garages").select("id", { count: "exact", head: true }).eq("is_verified", true),
+      supabase
+        .from("service_requests")
+        .select("status, pickup_address, assigned_mechanic_id, mechanics:assigned_mechanic_id(profiles:profile_id(full_name))")
+        .order("created_at", { ascending: false })
+        .limit(1)
+    ]);
+
+    for (const result of [requestsResult, garagesResult, latestResult]) {
+      if (result.error) throw result.error;
+    }
+
+    const requestRows = (requestsResult.data ?? []) as Array<{ status: string }>;
+    const latest = ((latestResult.data ?? []) as Array<{
+      status: string;
+      pickup_address: string;
+      mechanics?: { profiles?: { full_name?: string } | null } | null;
+    }>)[0];
+
+    return {
+      stats: {
+        liveRequests: requestRows.filter((request) => !["completed", "cancelled"].includes(request.status)).length,
+        garages: garagesResult.count ?? 0,
+        completedJobs: requestRows.filter((request) => request.status === "completed").length
+      },
+      latestRequest: latest ? {
+        status: titleCase(latest.status),
+        pickup: latest.pickup_address,
+        mechanic: latest.mechanics?.profiles?.full_name ?? "Awaiting assignment",
+        eta: latest.mechanics ? "Assigned" : "Pending"
+      } : null
+    };
+  });
+}
+
+export default async function CustomerHome() {
+  const { data: dashboard, error } = await loadCustomerDashboard();
+
   return (
     <AppShell
       role="Customer App"
@@ -13,9 +77,9 @@ export default function CustomerHome() {
     >
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {[
-          { label: "Avg arrival", value: "18 min", icon: Clock3 },
-          { label: "Pilot garages", value: "24", icon: Wrench },
-          { label: "Verified jobs", value: "1,280+", icon: ShieldCheck }
+          { label: "Live requests", value: String(dashboard.stats.liveRequests), icon: Clock3 },
+          { label: "Verified garages", value: String(dashboard.stats.garages), icon: Wrench },
+          { label: "Completed jobs", value: String(dashboard.stats.completedJobs), icon: ShieldCheck }
         ].map((item) => (
           <Card className="flex items-center gap-3" key={item.label}>
             <div className="flex size-11 items-center justify-center rounded-md bg-red-500/10 text-red-200">
@@ -28,6 +92,7 @@ export default function CustomerHome() {
           </Card>
         ))}
       </div>
+      {error ? <Card className="mb-4 border-amber-400/20 bg-amber-400/10 text-sm text-amber-100">Connect Supabase env vars to load live customer dashboard rows. Current dashboard is showing empty states.</Card> : null}
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card className="space-y-5">
           <div className="flex items-center justify-between gap-3">
@@ -60,14 +125,14 @@ export default function CustomerHome() {
                 <span className="size-4 rounded-full bg-red-500 ring-4 ring-red-500/20" />
                 <div>
                   <p className="text-sm font-black">Customer pickup</p>
-                  <p className="text-xs font-semibold text-zinc-400">Koramangala, WhatsApp pinned</p>
+                  <p className="text-xs font-semibold text-zinc-400">{dashboard.latestRequest?.pickup ?? "No request submitted yet"}</p>
                 </div>
               </div>
               <div className="relative mt-9 flex items-center gap-3">
                 <span className="size-4 rounded-full bg-emerald-400 ring-4 ring-emerald-400/20" />
                 <div>
-                  <p className="text-sm font-black">Nearest mechanic</p>
-                  <p className="text-xs font-semibold text-zinc-400">2.4 km away, 18 min ETA</p>
+                  <p className="text-sm font-black">Assigned mechanic</p>
+                  <p className="text-xs font-semibold text-zinc-400">{dashboard.latestRequest ? `${dashboard.latestRequest.mechanic} · ${dashboard.latestRequest.eta}` : "Waiting for first request"}</p>
                 </div>
               </div>
             </div>
@@ -135,7 +200,7 @@ export default function CustomerHome() {
           <Card>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-black">Request tracker</h2>
-              <StatusBadge tone="info">Submitted</StatusBadge>
+              <StatusBadge tone="info">{dashboard.latestRequest?.status ?? "No requests"}</StatusBadge>
             </div>
             <ol className="space-y-3 text-sm text-zinc-300">
               {["Email verified account", "Operations assigns mechanic", "Mechanic navigates via WhatsApp", "Customer shares OTP after completion"].map((item) => (

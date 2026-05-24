@@ -1,20 +1,115 @@
+import { readDashboardData, serviceClient } from "@mechconnect/supabase";
 import { AppShell, Button, Card, DispatchSkeleton, MetricCard, StatusBadge } from "@mechconnect/ui";
 import { AlertTriangle, CheckCheck, Eye, IndianRupee, ShieldAlert } from "lucide-react";
 
-const queues = [
-  { name: "Mechanic verification approvals", count: 12, tone: "warn" as const },
-  { name: "Manual payment verification", count: 31, tone: "info" as const },
-  { name: "Open disputes", count: 4, tone: "bad" as const },
-  { name: "Fraud detection logs", count: 8, tone: "warn" as const }
-];
+export const dynamic = "force-dynamic";
 
-const requests = [
-  { id: "MC-1042", customer: "Ananya R", garage: "HSR Moto Care", status: "Assigned", payment: "Pending" },
-  { id: "MC-1041", customer: "Karthik S", garage: "Rapid Bikes", status: "Completed", payment: "Verified" },
-  { id: "MC-1040", customer: "Mohan V", garage: "Indira Wheels", status: "Disputed", payment: "Disputed" }
-];
+type QueueTone = "warn" | "info" | "bad";
+type AdminRequest = { id: string; customer: string; garage: string; status: string; payment: string };
+type AdminDashboard = {
+  metrics: {
+    verifiedRevenue: number;
+    liveRequests: number;
+    cancellationRate: number;
+    completedRequests: number;
+  };
+  queues: Array<{ name: string; count: number; tone: QueueTone }>;
+  requests: AdminRequest[];
+};
 
-export default function AdminHome() {
+const emptyDashboard: AdminDashboard = {
+  metrics: { verifiedRevenue: 0, liveRequests: 0, cancellationRate: 0, completedRequests: 0 },
+  queues: [
+    { name: "Mechanic verification approvals", count: 0, tone: "warn" },
+    { name: "Manual payment verification", count: 0, tone: "info" },
+    { name: "Open disputes", count: 0, tone: "bad" },
+    { name: "Fraud detection logs", count: 0, tone: "warn" }
+  ],
+  requests: []
+};
+
+function rupees(value: number) {
+  return `Rs.${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value)}`;
+}
+
+function titleCase(value: string | null | undefined) {
+  return (value ?? "unknown").split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+async function loadAdminDashboard() {
+  return readDashboardData(emptyDashboard, async () => {
+    const supabase = serviceClient();
+
+    const [
+      unverifiedMechanics,
+      pendingPayments,
+      openDisputes,
+      fraudLogs,
+      verifiedPayments,
+      allRequests,
+      recentRequests
+    ] = await Promise.all([
+      supabase.from("mechanics").select("id", { count: "exact", head: true }).eq("is_verified", false),
+      supabase.from("payments").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("disputes").select("id", { count: "exact", head: true }).in("status", ["open", "investigating"]),
+      supabase.from("fraud_logs").select("id", { count: "exact", head: true }),
+      supabase.from("payments").select("amount").eq("status", "verified"),
+      supabase.from("service_requests").select("id, status"),
+      supabase
+        .from("service_requests")
+        .select("id, status, created_at, profiles:customer_id(full_name), garages:garage_id(name), payments(status)")
+        .order("created_at", { ascending: false })
+        .limit(8)
+    ]);
+
+    for (const result of [unverifiedMechanics, pendingPayments, openDisputes, fraudLogs, verifiedPayments, allRequests, recentRequests]) {
+      if (result.error) throw result.error;
+    }
+
+    const requestRows = (allRequests.data ?? []) as Array<{ id: string; status: string }>;
+    const verifiedRevenue = ((verifiedPayments.data ?? []) as Array<{ amount: number }>).reduce((sum, payment) => sum + payment.amount, 0);
+    const cancelled = requestRows.filter((request) => request.status === "cancelled").length;
+    const completed = requestRows.filter((request) => request.status === "completed").length;
+    const liveRequests = requestRows.filter((request) => !["completed", "cancelled"].includes(request.status)).length;
+
+    const requests = ((recentRequests.data ?? []) as Array<{
+      id: string;
+      status: string;
+      profiles?: { full_name?: string } | null;
+      garages?: { name?: string } | null;
+      payments?: Array<{ status?: string }> | { status?: string } | null;
+    }>).map((request) => {
+      const payment = Array.isArray(request.payments) ? request.payments[0] : request.payments;
+      return {
+        id: request.id.slice(0, 8),
+        customer: request.profiles?.full_name ?? "Unassigned customer",
+        garage: request.garages?.name ?? "Not assigned",
+        status: titleCase(request.status),
+        payment: titleCase(payment?.status ?? "not_collected")
+      };
+    });
+
+    return {
+      metrics: {
+        verifiedRevenue,
+        liveRequests,
+        cancellationRate: requestRows.length > 0 ? Number(((cancelled / requestRows.length) * 100).toFixed(1)) : 0,
+        completedRequests: completed
+      },
+      queues: [
+        { name: "Mechanic verification approvals", count: unverifiedMechanics.count ?? 0, tone: "warn" },
+        { name: "Manual payment verification", count: pendingPayments.count ?? 0, tone: "info" },
+        { name: "Open disputes", count: openDisputes.count ?? 0, tone: "bad" },
+        { name: "Fraud detection logs", count: fraudLogs.count ?? 0, tone: "warn" }
+      ],
+      requests
+    };
+  });
+}
+
+export default async function AdminHome() {
+  const { data: dashboard, error } = await loadAdminDashboard();
+
   return (
     <AppShell
       role="Super Admin Dashboard"
@@ -22,17 +117,18 @@ export default function AdminHome() {
       subtitle="A command center for live service operations with fast queues, manual payment verification, fraud signals, and garage performance."
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Gross verified revenue" value="Rs.2.8L" detail="Cash and QR after admin verification" />
-        <MetricCard label="Live requests" value="48" detail="Submitted through in-progress" />
-        <MetricCard label="Cancellation rate" value="6.2%" detail="Tracked for dispatch quality" />
-        <MetricCard label="Avg response" value="18m" detail="Manual dispatch benchmark" />
+        <MetricCard label="Gross verified revenue" value={rupees(dashboard.metrics.verifiedRevenue)} detail="Cash and QR after admin verification" />
+        <MetricCard label="Live requests" value={String(dashboard.metrics.liveRequests)} detail="Submitted through disputed" />
+        <MetricCard label="Cancellation rate" value={`${dashboard.metrics.cancellationRate}%`} detail="Tracked from real service requests" />
+        <MetricCard label="Completed services" value={String(dashboard.metrics.completedRequests)} detail="Verified completed request rows" />
       </div>
+      {error ? <Card className="mt-4 border-amber-400/20 bg-amber-400/10 text-sm text-amber-100">Connect Supabase env vars to load live production rows. Current dashboard is showing empty states.</Card> : null}
       <div className="mt-4 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
         <Card>
           <h2 className="mb-1 font-black">Operations queues</h2>
           <p className="mb-4 text-sm text-zinc-400">Clear the highest-risk work first.</p>
           <div className="grid gap-3">
-            {queues.map((queue) => (
+            {dashboard.queues.map((queue) => (
               <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.04] p-3" key={queue.name}>
                 <div>
                   <span className="text-sm font-black">{queue.name}</span>
@@ -64,7 +160,7 @@ export default function AdminHome() {
                 <tr><th className="py-2">Request</th><th>Customer</th><th>Garage</th><th>Status</th><th>Payment</th></tr>
               </thead>
               <tbody>
-                {requests.map((request) => (
+                {dashboard.requests.length > 0 ? dashboard.requests.map((request) => (
                   <tr className="border-b border-white/10" key={request.id}>
                     <td className="py-3 font-mono text-xs">{request.id}</td>
                     <td>{request.customer}</td>
@@ -72,7 +168,11 @@ export default function AdminHome() {
                     <td><StatusBadge tone={request.status === "Disputed" ? "bad" : "info"}>{request.status}</StatusBadge></td>
                     <td><StatusBadge tone={request.payment === "Verified" ? "good" : request.payment === "Disputed" ? "bad" : "warn"}>{request.payment}</StatusBadge></td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td className="py-6 text-center text-zinc-400" colSpan={5}>No service requests found in Supabase yet.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
