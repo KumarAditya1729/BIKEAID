@@ -80,7 +80,7 @@ export default async function CustomerHome() {
           { label: "Completed jobs", value: String(dashboard.stats.completedJobs), icon: ShieldCheck }
         ].map((item) => (
           <Card className="flex items-center gap-3" key={item.label}>
-            <div className="flex size-11 items-center justify-center rounded-md bg-red-500/10 text-red-200">
+            <div className="flex size-11 items-center justify-center rounded-[12px] bg-[#ff5a1f]/10 text-orange-200">
               <item.icon size={20} aria-hidden="true" />
             </div>
             <div>

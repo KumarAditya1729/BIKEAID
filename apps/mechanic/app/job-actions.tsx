@@ -73,7 +73,7 @@ export function MechanicJobActions({ requestId, pickupAddress }: { requestId: st
         <Button icon={<Navigation size={16} />} onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Navigate to: ${pickupAddress}`)}`, "_blank", "noopener,noreferrer")} type="button" variant="secondary">Navigate</Button>
         <Button icon={<Camera size={16} />} onClick={preparePhoto} type="button" variant="secondary">Photos</Button>
       </div>
-      {message ? <p className="mt-3 rounded-md bg-white/10 p-3 text-sm font-semibold text-zinc-200">{message}</p> : null}
+      {message ? <p className="mt-3 rounded-[12px] bg-white/10 p-3 text-sm font-semibold text-zinc-200">{message}</p> : null}
     </>
   );
 }

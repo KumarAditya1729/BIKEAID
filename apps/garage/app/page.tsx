@@ -96,9 +96,9 @@ export default async function GarageHome() {
           </div>
           <div className="grid gap-3">
             {dashboard.mechanics.length > 0 ? dashboard.mechanics.map((mechanic) => (
-              <div className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 sm:grid-cols-[1fr_auto]" key={mechanic.id}>
+              <div className="grid gap-3 rounded-[14px] border border-white/10 bg-white/[0.04] p-3 sm:grid-cols-[1fr_auto]" key={mechanic.id}>
                 <div className="flex items-center gap-3">
-                  <div className="flex size-11 items-center justify-center rounded-md bg-red-500/15 text-sm font-black text-red-200 shadow-sm">{mechanic.name.split(" ").map((part) => part[0]).join("")}</div>
+                  <div className="flex size-11 items-center justify-center rounded-[12px] bg-[#ff5a1f]/15 text-sm font-black text-orange-200 shadow-sm">{mechanic.name.split(" ").map((part) => part[0]).join("")}</div>
                   <div>
                     <p className="font-black">{mechanic.name}</p>
                     <div className="mt-1 flex items-center gap-2 text-xs font-bold text-zinc-400">
@@ -108,21 +108,21 @@ export default async function GarageHome() {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-center text-xs font-black sm:min-w-40">
-                  <div className="rounded-md bg-[#090b10] p-2">
+                  <div className="rounded-[12px] bg-[#0f0d0b] p-2">
                     <p className="text-zinc-400">Jobs</p>
                     <p className="text-base text-white">{mechanic.jobs}</p>
                   </div>
-                  <div className="rounded-md bg-[#090b10] p-2">
+                  <div className="rounded-[12px] bg-[#0f0d0b] p-2">
                     <p className="text-zinc-400">Share</p>
                     <p className="text-base text-emerald-700">Live</p>
                   </div>
                 </div>
               </div>
-            )) : <div className="rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-semibold text-zinc-400">No mechanics found in Supabase yet.</div>}
+            )) : <div className="rounded-[14px] border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-semibold text-zinc-400">No mechanics found in Supabase yet.</div>}
           </div>
         </Card>
         <Card className="space-y-4" id="wallet">
-          <div className="flex size-12 items-center justify-center rounded-md bg-red-500/15 text-red-200">
+          <div className="flex size-12 items-center justify-center rounded-[12px] bg-[#ff5a1f]/15 text-orange-200">
             <BarChart3 size={26} />
           </div>
           <div>
@@ -131,11 +131,11 @@ export default async function GarageHome() {
           </div>
           <DispatchSkeleton title="Syncing workforce status" />
           <div className="grid gap-2 text-sm">
-            <div className="flex items-center justify-between rounded-md bg-white/10 p-3 font-bold">
+            <div className="flex items-center justify-between rounded-[12px] bg-white/10 p-3 font-bold">
               <span className="flex items-center gap-2"><Bike size={16} /> Roadside jobs</span>
               <span>{dashboard.metrics.roadsideJobs}</span>
             </div>
-            <div className="flex items-center justify-between rounded-md bg-white/10 p-3 font-bold">
+            <div className="flex items-center justify-between rounded-[12px] bg-white/10 p-3 font-bold">
               <span className="flex items-center gap-2"><MapPinned size={16} /> Service zones</span>
               <span>{dashboard.metrics.serviceZones}</span>
             </div>

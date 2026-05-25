@@ -18,14 +18,14 @@ export function SignInForm() {
 
   return (
     <Card className="mx-auto max-w-md overflow-hidden p-0">
-      <div className="bg-red-600 p-5 text-white">
-        <p className="text-xs font-black uppercase tracking-wide text-red-100">Partner access</p>
+      <div className="bg-[#ff5a1f] p-5 text-white">
+        <p className="text-xs font-black uppercase tracking-wide text-orange-100">Partner access</p>
         <h2 className="mt-2 text-2xl font-black">Mechanic access</h2>
-        <p className="mt-2 text-sm leading-6 text-red-50">Sign in to manage field jobs and earnings.</p>
+        <p className="mt-2 text-sm leading-6 text-orange-50">Sign in to manage field jobs and earnings.</p>
       </div>
       <form className="space-y-3 p-4" onSubmit={submit}>
-        <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="email" placeholder="Email" required type="email" />
-        <input className="min-h-12 w-full rounded-md border border-white/10 bg-[#090b10] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-red-500" name="password" placeholder="Password" required type="password" />
+        <input className="min-h-12 w-full rounded-[12px] border border-white/10 bg-[#0f0d0b] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-[#ff5a1f]" name="email" placeholder="Email" required type="email" />
+        <input className="min-h-12 w-full rounded-[12px] border border-white/10 bg-[#0f0d0b] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-[#ff5a1f]" name="password" placeholder="Password" required type="password" />
         <Button className="w-full" type="submit">Sign in</Button>
         {message ? <p className="text-sm font-semibold text-zinc-300">{message}</p> : null}
       </form>

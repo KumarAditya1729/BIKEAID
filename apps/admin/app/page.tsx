@@ -129,12 +129,12 @@ export default async function AdminHome() {
           <p className="mb-4 text-sm text-zinc-400">Clear the highest-risk work first.</p>
           <div className="grid gap-3">
             {dashboard.queues.map((queue) => (
-              <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.04] p-3" key={queue.name}>
+              <div className="flex items-center justify-between rounded-[14px] border border-white/10 bg-white/[0.04] p-3" key={queue.name}>
                 <div>
                   <span className="text-sm font-black">{queue.name}</span>
                   <p className="mt-1 text-xs font-semibold text-zinc-400">Tap to review assigned evidence</p>
                 </div>
-                <span className="rounded-md bg-red-500/15 px-3 py-2 text-lg font-black text-red-200 shadow-sm">{queue.count}</span>
+                <span className="rounded-[12px] bg-[#ff5a1f]/15 px-3 py-2 text-lg font-black text-orange-200 shadow-sm">{queue.count}</span>
               </div>
             ))}
           </div>

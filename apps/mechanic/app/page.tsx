@@ -122,11 +122,11 @@ export default async function MechanicHome() {
             <AvailabilityButtons />
           </Card>
           <Card className="bg-zinc-950 text-white">
-            <p className="text-xs font-black uppercase tracking-wide text-red-100">Today earnings</p>
+            <p className="text-xs font-black uppercase tracking-wide text-orange-100">Today earnings</p>
             <p className="mt-2 text-3xl font-black">{rupees(dashboard.metrics.todayEarnings)}</p>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-black">
-              <span className="rounded-md bg-white/10 p-2">{dashboard.metrics.completedJobs} completed</span>
-              <span className="rounded-md bg-white/10 p-2">{dashboard.metrics.pendingPayments} pending</span>
+              <span className="rounded-[12px] bg-white/10 p-2">{dashboard.metrics.completedJobs} completed</span>
+              <span className="rounded-[12px] bg-white/10 p-2">{dashboard.metrics.pendingPayments} pending</span>
             </div>
           </Card>
           <MetricCard label="Rating" value={dashboard.metrics.rating} detail="Based on verified service completions" />
@@ -141,7 +141,7 @@ export default async function MechanicHome() {
           </div>
           <div className="space-y-3">
             {dashboard.jobs.length > 0 ? dashboard.jobs.map((job) => (
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-3" key={job.id}>
+              <div className="rounded-[14px] border border-white/10 bg-white/[0.04] p-3" key={job.id}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="font-black">{job.shortId} · {job.type}</p>
@@ -149,27 +149,27 @@ export default async function MechanicHome() {
                   </div>
                   <StatusBadge tone={job.status === "Completed" ? "good" : "info"}>{job.status}</StatusBadge>
                 </div>
-                <div className="mt-3 flex items-center gap-2 rounded-md bg-[#090b10] p-3 text-sm font-bold text-zinc-200">
-                  <MapPin size={17} className="text-red-600" />
+                <div className="mt-3 flex items-center gap-2 rounded-[12px] bg-[#0f0d0b] p-3 text-sm font-bold text-zinc-200">
+                  <MapPin size={17} className="text-[#ff5a1f]" />
                   Customer shared live location via WhatsApp
                 </div>
                 <MechanicJobActions pickupAddress={job.area} requestId={job.id} />
                 <div className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
-                  <div className="flex items-center gap-2 rounded-md bg-[#090b10] p-3 font-semibold text-zinc-200">
-                    <IndianRupee size={16} className="text-red-600" />
+                  <div className="flex items-center gap-2 rounded-[12px] bg-[#0f0d0b] p-3 font-semibold text-zinc-200">
+                    <IndianRupee size={16} className="text-[#ff5a1f]" />
                     {job.payout}
                   </div>
-                  <div className="flex items-center gap-2 rounded-md bg-[#090b10] p-3 font-semibold text-zinc-200">
-                    <Timer size={16} className="text-red-600" />
+                  <div className="flex items-center gap-2 rounded-[12px] bg-[#0f0d0b] p-3 font-semibold text-zinc-200">
+                    <Timer size={16} className="text-[#ff5a1f]" />
                     18 min ETA
                   </div>
-                  <div className="flex items-center gap-2 rounded-md bg-[#090b10] p-3 font-semibold text-zinc-200">
-                    <Zap size={16} className="text-red-600" />
+                  <div className="flex items-center gap-2 rounded-[12px] bg-[#0f0d0b] p-3 font-semibold text-zinc-200">
+                    <Zap size={16} className="text-[#ff5a1f]" />
                     OTP close
                   </div>
                 </div>
               </div>
-            )) : <div className="rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-semibold text-zinc-400">No assigned mechanic jobs found in Supabase yet.</div>}
+            )) : <div className="rounded-[14px] border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-semibold text-zinc-400">No assigned mechanic jobs found in Supabase yet.</div>}
           </div>
           <div className="mt-4">
             <DispatchSkeleton title="Uploading proof skeleton" />
