@@ -38,7 +38,7 @@ export function CustomerRequestForm() {
   const [bikeCategory, setBikeCategory] = useState<BikeCategory>("150cc");
   const [distanceSlab, setDistanceSlab] = useState<DistanceSlab>("within_5km");
   const [whatsappNumber, setWhatsappNumber] = useState("9876543211");
-  const [pickupAddress, setPickupAddress] = useState("Koramangala 5th Block, Bengaluru");
+  const [pickupAddress, setPickupAddress] = useState("Sector 62, Noida");
   const [issueDescription, setIssueDescription] = useState(issueOptions[0].text);
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -24,13 +24,13 @@ export function AppShell({
             </div>
             <div>
               <p className="text-base font-black tracking-normal text-[#171310]">MechConnect</p>
-              <p className="text-xs font-bold text-zinc-500">{role}</p>
+              <p className="text-xs font-bold text-zinc-500">{role} · Noida pilot</p>
             </div>
           </div>
           <div className="hidden items-center gap-2 sm:flex">
             <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm font-black text-[#171310] shadow-sm ring-1 ring-black/5">
               <MapPin size={16} aria-hidden="true" />
-              Bengaluru pilot
+              Noida pilot
             </div>
             <div className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-3 py-2 text-sm font-black text-white shadow-sm">
               <ShieldCheck size={16} aria-hidden="true" />
