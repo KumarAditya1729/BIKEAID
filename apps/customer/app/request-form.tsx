@@ -16,6 +16,23 @@ const issueOptions = [
   { label: "Battery", icon: BatteryWarning, text: "Battery issue support needed" }
 ];
 
+const serviceOptions: Array<{ value: ServiceType; label: string; detail: string }> = [
+  { value: "roadside_assistance", label: "Breakdown assist", detail: "Roadside rescue" },
+  { value: "home_service", label: "Home service", detail: "Scheduled care" }
+];
+
+const bikeOptions: Array<{ value: BikeCategory; label: string; detail: string }> = [
+  { value: "100cc", label: "100cc", detail: "Daily commuter" },
+  { value: "150cc", label: "150cc", detail: "Most common" },
+  { value: "200-250cc", label: "250cc", detail: "Performance" },
+  { value: "350cc", label: "350cc", detail: "Heavy bike" }
+];
+
+const distanceOptions: Array<{ value: DistanceSlab; label: string; price: string }> = [
+  { value: "within_5km", label: "Within 5km", price: "Rs.100" },
+  { value: "within_10km", label: "Within 10km", price: "Rs.200" }
+];
+
 export function CustomerRequestForm() {
   const [serviceType, setServiceType] = useState<ServiceType>("roadside_assistance");
   const [bikeCategory, setBikeCategory] = useState<BikeCategory>("150cc");
@@ -117,34 +134,65 @@ export function CustomerRequestForm() {
             </div>
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-2">
-            <span className="text-sm font-semibold">Service type</span>
-            <select className="min-h-12 w-full rounded-[12px] border border-white/10 bg-[#0f0d0b] px-3 font-semibold text-white outline-none focus:border-[#ff5a1f]" onChange={(event) => setServiceType(event.target.value as ServiceType)} value={serviceType}>
-              <option value="roadside_assistance">Roadside assistance</option>
-              <option value="home_service">Home bike service</option>
-            </select>
-          </label>
-          <label className="space-y-2">
-            <span className="text-sm font-semibold">Bike category</span>
-            <select className="min-h-12 w-full rounded-[12px] border border-white/10 bg-[#0f0d0b] px-3 font-semibold text-white outline-none focus:border-[#ff5a1f]" onChange={(event) => setBikeCategory(event.target.value as BikeCategory)} value={bikeCategory}>
-              <option>100cc</option>
-              <option>150cc</option>
-              <option>200-250cc</option>
-              <option>350cc</option>
-            </select>
-          </label>
-          <label className="space-y-2">
-            <span className="text-sm font-semibold">Distance slab</span>
-            <select className="min-h-12 w-full rounded-[12px] border border-white/10 bg-[#0f0d0b] px-3 font-semibold text-white outline-none focus:border-[#ff5a1f]" onChange={(event) => setDistanceSlab(event.target.value as DistanceSlab)} value={distanceSlab}>
-              <option value="within_5km">Within 5km - Rs.100</option>
-              <option value="within_10km">Within 10km - Rs.200</option>
-            </select>
-          </label>
+        <div className="space-y-4">
+          <div>
+            <p className="mb-2 text-sm font-semibold">Service type</p>
+            <div className="grid grid-cols-2 gap-2">
+              {serviceOptions.map((option) => (
+                <button
+                  className={serviceType === option.value ? "rounded-[14px] bg-[#ff5a1f] p-3 text-left text-white shadow-lg shadow-orange-950/30" : "rounded-[14px] border border-white/10 bg-[#0f0d0b] p-3 text-left text-white"}
+                  key={option.value}
+                  onClick={() => setServiceType(option.value)}
+                  type="button"
+                >
+                  <span className="block text-sm font-black">{option.label}</span>
+                  <span className={serviceType === option.value ? "mt-1 block text-xs font-bold text-orange-50" : "mt-1 block text-xs font-bold text-zinc-500"}>{option.detail}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-semibold">Select bike category</p>
+            <div className="grid grid-cols-4 gap-2">
+              {bikeOptions.map((option) => (
+                <button
+                  className={bikeCategory === option.value ? "rounded-[14px] bg-white p-3 text-left text-[#171310] shadow-lg shadow-black/20" : "rounded-[14px] border border-white/10 bg-[#0f0d0b] p-3 text-left text-white"}
+                  key={option.value}
+                  onClick={() => setBikeCategory(option.value)}
+                  type="button"
+                >
+                  <span className="block text-sm font-black">{option.label}</span>
+                  <span className={bikeCategory === option.value ? "mt-1 hidden text-[10px] font-bold text-zinc-500 sm:block" : "mt-1 hidden text-[10px] font-bold text-zinc-500 sm:block"}>{option.detail}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-semibold">Distance slab</p>
+            <div className="grid grid-cols-2 gap-2">
+              {distanceOptions.map((option) => (
+                <button
+                  className={distanceSlab === option.value ? "flex min-h-16 items-center justify-between rounded-[14px] bg-orange-50 p-3 text-left text-orange-700" : "flex min-h-16 items-center justify-between rounded-[14px] border border-white/10 bg-[#0f0d0b] p-3 text-left text-white"}
+                  key={option.value}
+                  onClick={() => setDistanceSlab(option.value)}
+                  type="button"
+                >
+                  <span className="text-sm font-black">{option.label}</span>
+                  <span className="text-xs font-black">{option.price}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold">WhatsApp number</span>
             <input className="min-h-12 w-full rounded-[12px] border border-white/10 bg-[#0f0d0b] px-3 font-semibold text-white outline-none placeholder:text-zinc-600 focus:border-[#ff5a1f]" onChange={(event) => setWhatsappNumber(event.target.value)} placeholder="9876543210" value={whatsappNumber} />
           </label>
+          <div className="rounded-[14px] border border-white/10 bg-[#0f0d0b] p-3">
+            <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Service mode</p>
+            <p className="mt-1 text-sm font-black text-white">{serviceType === "roadside_assistance" ? "Urgent roadside dispatch" : "Home bike service slot"}</p>
+          </div>
+          </div>
         </div>
         <label className="space-y-2">
           <span className="text-sm font-semibold">Issue and pickup address</span>

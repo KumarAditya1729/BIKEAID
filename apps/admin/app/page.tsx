@@ -36,6 +36,12 @@ function titleCase(value: string | null | undefined) {
   return (value ?? "unknown").split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 }
 
+function queueAccent(tone: QueueTone) {
+  if (tone === "bad") return "border-l-red-400";
+  if (tone === "warn") return "border-l-[#ff5a1f]";
+  return "border-l-emerald-400";
+}
+
 async function loadAdminDashboard() {
   return readDashboardData(emptyDashboard, async () => {
     const supabase = serviceClient();
@@ -97,10 +103,10 @@ async function loadAdminDashboard() {
         completedRequests: completed
       },
       queues: [
-        { name: "Mechanic verification approvals", count: unverifiedMechanics.count ?? 0, tone: "warn" },
-        { name: "Manual payment verification", count: pendingPayments.count ?? 0, tone: "info" },
-        { name: "Open disputes", count: openDisputes.count ?? 0, tone: "bad" },
-        { name: "Fraud detection logs", count: fraudLogs.count ?? 0, tone: "warn" }
+        { name: "Mechanic verification approvals", count: unverifiedMechanics.count ?? 0, tone: "warn" as QueueTone },
+        { name: "Manual payment verification", count: pendingPayments.count ?? 0, tone: "info" as QueueTone },
+        { name: "Open disputes", count: openDisputes.count ?? 0, tone: "bad" as QueueTone },
+        { name: "Fraud detection logs", count: fraudLogs.count ?? 0, tone: "warn" as QueueTone }
       ],
       requests
     };
@@ -129,7 +135,7 @@ export default async function AdminHome() {
           <p className="mb-4 text-sm text-zinc-400">Clear the highest-risk work first.</p>
           <div className="grid gap-3">
             {dashboard.queues.map((queue) => (
-              <div className="flex items-center justify-between rounded-[14px] border border-white/10 bg-white/[0.04] p-3" key={queue.name}>
+              <div className={`flex items-center justify-between rounded-[14px] border border-l-4 border-white/10 bg-white/[0.04] p-3 ${queueAccent(queue.tone)}`} key={queue.name}>
                 <div>
                   <span className="text-sm font-black">{queue.name}</span>
                   <p className="mt-1 text-xs font-semibold text-zinc-400">Tap to review assigned evidence</p>
