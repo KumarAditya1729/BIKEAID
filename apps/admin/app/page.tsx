@@ -1,5 +1,5 @@
 import { readDashboardData, serviceClient } from "@mechconnect/supabase";
-import { AppShell, Button, Card, DispatchSkeleton, MetricCard, StatusBadge } from "@mechconnect/ui";
+import { AppShell, Card, DispatchSkeleton, LinkButton, MetricCard, StatusBadge } from "@mechconnect/ui";
 import { AlertTriangle, CheckCheck, Eye, IndianRupee, ShieldAlert } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -124,7 +124,7 @@ export default async function AdminHome() {
       </div>
       {error ? <Card className="mt-4 border-amber-400/20 bg-amber-400/10 text-sm text-amber-100">Connect Supabase env vars to load live production rows. Current dashboard is showing empty states.</Card> : null}
       <div className="mt-4 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-        <Card>
+        <Card id="operations-queues">
           <h2 className="mb-1 font-black">Operations queues</h2>
           <p className="mb-4 text-sm text-zinc-400">Clear the highest-risk work first.</p>
           <div className="grid gap-3">
@@ -142,17 +142,17 @@ export default async function AdminHome() {
             <DispatchSkeleton title="Loading audit evidence" />
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2">
-            <Button icon={<CheckCheck size={16} />}>Verify</Button>
-            <Button variant="secondary" icon={<ShieldAlert size={16} />}>Audit</Button>
+            <LinkButton href="#live-requests" icon={<CheckCheck size={16} />}>Verify</LinkButton>
+            <LinkButton href="#audit-evidence" icon={<ShieldAlert size={16} />} variant="secondary">Audit</LinkButton>
           </div>
         </Card>
-        <Card>
+        <Card id="live-requests">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="font-black">Live request visibility</h2>
               <p className="text-sm text-zinc-400">Scan assignments, payments, and disputes.</p>
             </div>
-            <Button variant="secondary" icon={<Eye size={16} />}>Open console</Button>
+            <LinkButton href="#live-requests" icon={<Eye size={16} />} variant="secondary">Open console</LinkButton>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[680px] text-left text-sm">
@@ -179,11 +179,11 @@ export default async function AdminHome() {
         </Card>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <Card className="flex gap-3">
+        <Card className="flex gap-3" id="wallet">
           <IndianRupee className="text-emerald-600" />
           <p className="text-sm leading-6 text-zinc-300">No Razorpay in MVP: every cash or QR payment creates an immutable transaction row, then admin verification changes payment status.</p>
         </Card>
-        <Card className="flex gap-3">
+        <Card className="flex gap-3" id="audit-evidence">
           <AlertTriangle className="text-amber-600" />
           <p className="text-sm leading-6 text-zinc-300">Fraud logs capture suspicious repeated cancellations, OTP mismatches, disputed collections, and mechanic photo upload anomalies.</p>
         </Card>

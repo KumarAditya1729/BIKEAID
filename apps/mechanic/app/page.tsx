@@ -1,10 +1,11 @@
 import { readDashboardData, serviceClient } from "@mechconnect/supabase";
-import { AppShell, Button, Card, DispatchSkeleton, MetricCard, StatusBadge } from "@mechconnect/ui";
-import { Camera, CheckCircle2, IndianRupee, MapPin, MessageCircle, Navigation, PhoneCall, Timer, XCircle, Zap } from "lucide-react";
+import { AppShell, Card, DispatchSkeleton, LinkButton, MetricCard, StatusBadge } from "@mechconnect/ui";
+import { IndianRupee, MapPin, MessageCircle, PhoneCall, Timer, Zap } from "lucide-react";
+import { AvailabilityButtons, MechanicJobActions } from "./job-actions";
 
 export const dynamic = "force-dynamic";
 
-type MechanicJob = { id: string; type: string; bike: string; area: string; payout: string; status: string };
+type MechanicJob = { id: string; shortId: string; type: string; bike: string; area: string; payout: string; status: string; whatsappNumber: string };
 type MechanicDashboard = {
   jobs: MechanicJob[];
   metrics: {
@@ -45,7 +46,7 @@ async function loadMechanicDashboard() {
     const [requestsResult, paymentsResult, ratingsResult, emergencyResult] = await Promise.all([
       supabase
         .from("service_requests")
-        .select("id, service_type, bike_category, pickup_address, estimated_total, status, created_at")
+        .select("id, service_type, bike_category, pickup_address, estimated_total, status, whatsapp_number, created_at")
         .not("assigned_mechanic_id", "is", null)
         .order("created_at", { ascending: false })
         .limit(8),
@@ -72,12 +73,14 @@ async function loadMechanicDashboard() {
 
     return {
       jobs: requestRows.map((job) => ({
-        id: job.id.slice(0, 8),
+        id: job.id,
+        shortId: job.id.slice(0, 8),
         type: titleCase(job.service_type),
         bike: job.bike_category,
         area: job.pickup_address,
         payout: rupees(Math.round(job.estimated_total * 0.6)),
-        status: titleCase(job.status)
+        status: titleCase(job.status),
+        whatsappNumber: (job as { whatsapp_number?: string }).whatsapp_number ?? ""
       })),
       metrics: {
         nextPickup: requestRows[0]?.pickup_address?.slice(0, 28) ?? "No job",
@@ -116,13 +119,7 @@ export default async function MechanicHome() {
               <h2 className="font-black">Availability</h2>
               <StatusBadge tone="good">Online</StatusBadge>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              {["Online", "Busy", "Offline", "Emergency duty"].map((status, index) => (
-                <Button key={status} variant={index === 0 ? "primary" : "secondary"}>
-                  {status}
-                </Button>
-              ))}
-            </div>
+            <AvailabilityButtons />
           </Card>
           <Card className="bg-zinc-950 text-white">
             <p className="text-xs font-black uppercase tracking-wide text-red-100">Today earnings</p>
@@ -147,7 +144,7 @@ export default async function MechanicHome() {
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-3" key={job.id}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <p className="font-black">{job.id} · {job.type}</p>
+                    <p className="font-black">{job.shortId} · {job.type}</p>
                     <p className="text-sm text-zinc-400">{job.bike} bike near {job.area}</p>
                   </div>
                   <StatusBadge tone={job.status === "Completed" ? "good" : "info"}>{job.status}</StatusBadge>
@@ -156,12 +153,7 @@ export default async function MechanicHome() {
                   <MapPin size={17} className="text-red-600" />
                   Customer shared live location via WhatsApp
                 </div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-4">
-                  <Button variant="secondary" icon={<CheckCircle2 size={16} />}>Accept</Button>
-                  <Button variant="ghost" icon={<XCircle size={16} />}>Reject</Button>
-                  <Button variant="secondary" icon={<Navigation size={16} />}>Navigate</Button>
-                  <Button variant="secondary" icon={<Camera size={16} />}>Photos</Button>
-                </div>
+                <MechanicJobActions pickupAddress={job.area} requestId={job.id} />
                 <div className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
                   <div className="flex items-center gap-2 rounded-md bg-[#090b10] p-3 font-semibold text-zinc-200">
                     <IndianRupee size={16} className="text-red-600" />
@@ -183,8 +175,8 @@ export default async function MechanicHome() {
             <DispatchSkeleton title="Uploading proof skeleton" />
           </div>
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <Button icon={<MessageCircle size={18} />}>Open WhatsApp</Button>
-            <Button variant="secondary" icon={<PhoneCall size={18} />}>Call customer</Button>
+            <LinkButton href="https://wa.me/" icon={<MessageCircle size={18} />}>Open WhatsApp</LinkButton>
+            <LinkButton href="tel:+919876543211" icon={<PhoneCall size={18} />} variant="secondary">Call customer</LinkButton>
           </div>
         </Card>
       </div>

@@ -1,5 +1,5 @@
 import { readDashboardData, serviceClient } from "@mechconnect/supabase";
-import { AppShell, Button, Card, DispatchSkeleton, MetricCard, StatusBadge } from "@mechconnect/ui";
+import { AppShell, Card, DispatchSkeleton, LinkButton, MetricCard, StatusBadge } from "@mechconnect/ui";
 import { BarChart3, Bike, MapPinned, Star, UserPlus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -86,13 +86,13 @@ export default async function GarageHome() {
       </div>
       {error ? <Card className="mt-4 border-amber-400/20 bg-amber-400/10 text-sm text-amber-100">Connect Supabase env vars to load live garage rows. Current dashboard is showing empty states.</Card> : null}
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card>
+        <Card id="jobs">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="font-black">Mechanic roster</h2>
               <p className="text-sm text-zinc-400">Live duty state and daily output.</p>
             </div>
-            <Button icon={<UserPlus size={16} />}>Add mechanic</Button>
+            <LinkButton href="mailto:admin@mechconnect.in?subject=Add%20mechanic%20to%20garage" icon={<UserPlus size={16} />}>Add mechanic</LinkButton>
           </div>
           <div className="grid gap-3">
             {dashboard.mechanics.length > 0 ? dashboard.mechanics.map((mechanic) => (
@@ -121,7 +121,7 @@ export default async function GarageHome() {
             )) : <div className="rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-semibold text-zinc-400">No mechanics found in Supabase yet.</div>}
           </div>
         </Card>
-        <Card className="space-y-4">
+        <Card className="space-y-4" id="wallet">
           <div className="flex size-12 items-center justify-center rounded-md bg-red-500/15 text-red-200">
             <BarChart3 size={26} />
           </div>
