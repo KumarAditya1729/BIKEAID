@@ -11,6 +11,11 @@ export const profileSchema = z.object({
   role: roleSchema
 });
 
+export const profileUpdateSchema = z.object({
+  fullName: z.string().trim().min(2).max(80).optional(),
+  phone: phoneSchema.optional()
+}).refine((value) => value.fullName !== undefined || value.phone !== undefined, "At least one profile field is required");
+
 export const serviceRequestSchema = z.object({
   serviceType: z.enum(serviceTypes),
   bikeCategory: z.enum(bikeCategories),
@@ -77,4 +82,34 @@ export const mechanicVerificationSchema = z.object({
   isVerified: z.boolean(),
   garageId: uuidSchema.optional(),
   payoutPercentage: z.coerce.number().min(0).max(100).optional()
+});
+
+export const requestCancelSchema = z.object({
+  requestId: uuidSchema,
+  reason: z.string().trim().min(5).max(500)
+});
+
+export const disputeCreateSchema = z.object({
+  requestId: uuidSchema,
+  reason: z.string().trim().min(5).max(1000)
+});
+
+export const disputeUpdateSchema = z.object({
+  disputeId: uuidSchema,
+  status: z.enum(["open", "investigating", "resolved", "rejected"]),
+  resolution: z.string().trim().max(1000).optional()
+}).refine((value) => value.status !== "resolved" || Boolean(value.resolution), "Resolved disputes require a resolution");
+
+export const auditLogQuerySchema = z.object({
+  entityTable: z.string().trim().min(1).max(80).optional(),
+  entityId: uuidSchema.optional(),
+  action: z.string().trim().min(1).max(80).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(50)
+});
+
+export const fraudLogQuerySchema = z.object({
+  severity: z.enum(["low", "medium", "high"]).optional(),
+  eventType: z.string().trim().min(1).max(120).optional(),
+  requestId: uuidSchema.optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(50)
 });

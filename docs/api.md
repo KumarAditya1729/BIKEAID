@@ -22,10 +22,14 @@ Security implication: never accept `role`, `customer_id`, `mechanic_id`, `garage
 
 Customer:
 
+- `GET /api/profile`: returns the authenticated profile.
+- `PATCH /api/profile`: updates allowed profile fields without trusting client roles.
 - `POST /api/quote`: validates service request inputs and returns a trusted quote.
 - `POST /api/requests`: creates request after auth, server-calculated pricing, and RLS insert.
 - `GET /api/requests`: lists own request history.
 - `POST /api/ratings`: customer rates a completed request.
+- `GET /api/disputes`: lists the customer's disputes.
+- `POST /api/disputes`: opens a dispute for the customer's own request and writes fraud evidence.
 
 Mechanic:
 
@@ -44,6 +48,8 @@ Garage:
 
 Admin:
 
+- `GET /api/analytics`: returns admin operational metrics, request funnel, revenue, disputes, and fraud counts.
+- `GET /api/requests`: lists requests with customer, garage, mechanic, and payment context.
 - `PATCH /api/requests/:id/assign`: assign garage/mechanic.
 - `POST /api/requests/assign`: assign garage/mechanic.
 - `POST /api/payments/verify`: verify pending payment.
@@ -51,6 +57,8 @@ Admin:
 - `POST /api/roles/promote`: promote customer profiles to mechanic, garage owner, or admin.
 - `GET /api/audit`: audit log search.
 - `GET /api/fraud`: fraud log search.
+- `GET /api/disputes`: lists disputes for operations review.
+- `PATCH /api/disputes`: updates dispute status and resolution.
 
 ## Backend Logic Rules
 
