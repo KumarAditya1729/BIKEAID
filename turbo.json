@@ -1,5 +1,20 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_CUSTOMER_APP_URL",
+    "NEXT_PUBLIC_MECHANIC_APP_URL",
+    "NEXT_PUBLIC_GARAGE_APP_URL",
+    "NEXT_PUBLIC_ADMIN_APP_URL",
+    "NEXT_PUBLIC_ENABLE_CLIENT_LOGS",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "OTP_PEPPER",
+    "ADMIN_EMAIL_DOMAIN",
+    "RATE_LIMIT_WINDOW_SECONDS",
+    "RATE_LIMIT_MAX_REQUESTS"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
