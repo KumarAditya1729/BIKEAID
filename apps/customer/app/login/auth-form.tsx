@@ -3,11 +3,19 @@
 import { getBrowserSupabase } from "@mechconnect/supabase";
 import { Button, Card } from "@mechconnect/ui";
 import { LogIn, UserPlus } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 
 export function CustomerAuthForm() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [message, setMessage] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("verified") === "1") {
+      setMessage("Email verified. You can sign in now.");
+    }
+  }, [searchParams]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,6 +33,7 @@ export function CustomerAuthForm() {
           email,
           password,
           options: {
+            emailRedirectTo: `${window.location.origin}/login?verified=1`,
             data: {
               full_name: fullName,
               phone
@@ -39,6 +48,9 @@ export function CustomerAuthForm() {
     }
 
     setMessage(mode === "signup" ? "Check your email to verify your account." : "Signed in successfully.");
+    if (mode === "signin") {
+      window.location.href = "/";
+    }
   }
 
   return (
